@@ -1,69 +1,144 @@
-🤖 Robô de Coleta Automática de Dados DETER
+🤖 DETER Data Automation Pipeline
 
-📌 Sobre o projeto
+Automação em Python para coleta, processamento e atualização diária de dados vetoriais do sistema DETER (INPE/TerraBrasilis).
 
-Este projeto consiste em uma automação desenvolvida em Python para coleta diária de dados vetoriais disponibilizados pelo sistema DETER.
+O robô realiza todo o fluxo de aquisição dos dados ambientais, desde a autenticação na plataforma, download do arquivo compactado, validação, extração do shapefile e conversão da tabela espacial para CSV.
 
-O robô realiza o download automático dos arquivos disponibilizados online, processa os dados compactados e organiza os arquivos para utilização em análises ambientais e geoespaciais.
+O objetivo é automatizar a atualização de bases geoespaciais utilizadas em análises ambientais e sistemas de informação geográfica (SIG).
 
-O objetivo é reduzir atividades manuais repetitivas e garantir uma rotina padronizada de atualização dos dados.
+📌 Visão geral do fluxo
+
+TerraBrasilis / INPE
+|
+↓
+Autenticação automática
+|
+↓
+Download diário do arquivo vetorial
+|
+↓
+Validação do ZIP
+|
+↓
+Extração segura do Shapefile
+|
+↓
+Conversão DBF → CSV
+|
+↓
+Atualização da base espacial
 
 🚀 Funcionalidades
 
-- ✅ Acesso automático ao portal de dados do DETER
-- ✅ Download diário dos arquivos vetoriais disponibilizados
-- ✅ Gerenciamento de arquivos compactados (.zip)
-- ✅ Extração automática dos dados geoespaciais
-- ✅ Organização dos arquivos em diretórios de armazenamento
-- ✅ Processamento de grandes volumes de dados vetoriais (600 mil+ registros)
-- ✅ Execução automatizada por rotina agendada
+🔐 Autenticação
+- Login automático utilizando token de acesso
+- Comunicação segura com a API do TerraBrasilis
 
-🔄 Fluxo da automação
-Portal DETER
-↓
-Download automático
-↓
-Arquivo vetorial compactado (.zip)
-↓
-Extração dos arquivos
-↓
-Armazenamento na rede
-↓
-Dados prontos para análise GIS
+📥 Download automatizado
+- Download dos arquivos vetoriais DETER
+- Suporte para arquivos grandes utilizando streaming
+- Salvamento automático em rede
+
+🛡️ Validação dos dados
+
+Antes de atualizar a base o robô verifica:
+
+- Existência do arquivo ZIP
+- Integridade do arquivo compactado
+- Presença dos componentes essenciais do shapefile:
+  - `.shp`
+  - `.dbf`
+
+🧹 Processamento dos dados
+
+Após o download:
+
+1. O arquivo é extraído em uma pasta temporária
+2. Os arquivos são validados
+3. Dados antigos são removidos
+4. A nova versão é publicada na pasta final
+5. Arquivos DBF são convertidos para CSV
+
+
+🔄 Controle inteligente de atualização
+
+O robô verifica:
+
+- Se os dados do dia já existem
+- Se o download foi concluído anteriormente
+- Se existe algum arquivo temporário válido
+
+Caso a base já esteja atualizada, evita novo download.
+
+🔁 Sistema de retentativa
+
+Em caso de falha:
+
+- registra a tentativa
+- aguarda intervalo programado
+- realiza novas tentativas automaticamente
+
+Intervalos configurados:
+
+
+1ª tentativa → imediata
+2ª tentativa → 30 minutos
+3ª tentativa → 2 horas
+4ª tentativa → 6 horas
+
 🛠️ Tecnologias utilizadas
 
 - Python 3
 - Requests
-- Automação de arquivos
-- Manipulação de dados geoespaciais
-- Arquivos Shapefile (.shp)
-- Rotinas agendadas no sistema operacional
+- Pandas
+- Zipfile
+- DBFRead
+- Manipulação de arquivos
+- Automação Windows (.bat)
+- Dados geoespaciais
 
 📂 Estrutura do projeto
 
-robo-deter/
+deter-data-automation/
+
 │
-├── robo_download.py # Script principal da automação
+├── robo_deter.py
 │
-├── iniciar_robo.bat # Arquivo para iniciar execução automática
+├── iniciar_robo.bat
+│
+├── requirements.txt
+│
+├── temp/
 │
 ├── dados/
-│ ├── zip/ # Arquivos baixados
-│ └── shp/ # Arquivos extraídos
-│
-├── logs/
-│ └── execucao.log # Histórico das execuções
+│ ├── shapefile/
+│ └── csv/
 │
 └── README.md
 
-▶️ Como executar
+▶️ Execução
 
-1. Instalar dependências
+Execução manual:
 
-bash
-pip install -r requirements.txt
-2. Executar manualmente
-python robo_download.py
-3. Execução automática
+```bash
+python robo_deter.py
 
-O arquivo iniciar_robo.bat permite iniciar o robô automaticamente através do Agendador de Tarefas do Windows.
+Execução automática:
+
+O arquivo .bat pode ser configurado no Agendador de Tarefas do Windows para executar diariamente.
+
+🌎 Aplicações
+
+Este projeto pode ser utilizado em:
+
+Monitoramento ambiental
+Fiscalização territorial
+Geoprocessamento
+Atualização automática de bases SIG
+Sistemas de apoio à decisão ambiental
+👩‍💻 Autora
+
+Nadelly Gama da Silva
+
+Engenharia Ambiental
+Python | Geoprocessamento | Dados Ambientais
